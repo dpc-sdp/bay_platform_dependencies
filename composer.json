@@ -1,0 +1,32 @@
+{
+  "name": "dpc-sdp/bay_platform_dependencies",
+  "description": "Drupal integrations and dependency management for the Bay hosting platform.",
+  "type": "drupal-module",
+  "license": "GPL-2.0-or-later",
+  "require": {
+    "drush/drush": "^10.3",
+    "drupal/purge": "3.0",
+    "drupal/section_purger": "dev-updates_to_compatible_with_drupal_9",
+    "drupal/redis": "^1.0",
+    "drupal/smtp": "^1.2",
+    "dpc-sdp/tide_logs": "1.0.0"
+  },
+  "exclude": [
+    "drupal/section_purger"
+  ],
+  "repositories": {
+    "drupal": {
+      "type": "composer",
+      "url": "https://packages.drupal.org/8",
+      "exclude": [
+        "drupal/section_purger"
+      ]
+    },
+    "drupal/section_purger": {
+      "type": "git",
+      "url": "https://git.drupalcode.org/issue/section_purge-3227034.git"
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}
