@@ -5,7 +5,7 @@
   "license": "GPL-2.0-or-later",
   "require": {
     "drush/drush": "^10.3",
-    "drupal/purge": "3.0",
+    "drupal/purge": "^3.4",
     "drupal/section_purger": "dev-updates_to_compatible_with_drupal_9",
     "drupal/redis": "^1.0",
     "drupal/smtp": "^1.2",
