@@ -9,7 +9,22 @@
     "drupal/section_purger": "dev-updates_to_compatible_with_drupal_9",
     "drupal/redis": "^1.0",
     "drupal/smtp": "^1.2",
-    "dpc-sdp/tide_logs": "1.0.0"
+    "dpc-sdp/tide_logs": "1.0.0",
+    "cweagans/composer-patches": "^1.7"
+  },
+  "config": {
+    "allow-plugins": {
+      "cweagans/composer-patches": true
+    }
+  },
+  "extra": {
+    "composer-exit-on-patch-failure": true,
+    "enable-patching": true,
+    "patches": {
+      "drupal/redis": {
+        "Implement initial RedisCluster client integration - https://www.drupal.org/project/redis/issues/2900947#comment-14779350": "https://www.drupal.org/files/issues/2022-11-10/2900947-57.patch"
+      }
+    }
   },
   "exclude": [
     "drupal/section_purger"
