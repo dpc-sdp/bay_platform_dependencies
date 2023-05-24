@@ -18,3 +18,10 @@ function bay_platform_dependencies_install() {
 function bay_platform_dependencies_uninstall() {
   \Drupal::messenger()->addStatus(__FUNCTION__);
 }
+
+/**
+ * Enable bay_monitoring.
+ */
+function bay_platform_dependencies_update_8001() {
+  \Drupal::service('module_installer')->install(['bay_monitoring']);
+}
