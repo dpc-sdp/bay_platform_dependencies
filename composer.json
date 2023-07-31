@@ -37,7 +37,7 @@
         "drupal/section_purger"
       ]
     },
-    "drupal/section_purge": {
+    "drupal/section_purger": {
       "type": "vcs",
       "no-api": true,
       "url": "https://git.drupalcode.org/issue/section_purge-3307199.git"
