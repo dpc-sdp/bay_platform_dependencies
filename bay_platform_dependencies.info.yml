@@ -2,7 +2,7 @@ name: bay-platform-dependencies
 type: module
 description: Drupal integrations and dependency management for the Bay hosting platform.
 package: SDP Bay
-core_version_requirement: ^8.8 || ^9
+core_version_requirement: ^9 || ^10
 dependencies:
   - purge:purge
   - redis:redis

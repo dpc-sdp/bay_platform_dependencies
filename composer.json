@@ -4,12 +4,12 @@
   "type": "drupal-module",
   "license": "GPL-2.0-or-later",
   "require": {
-    "drush/drush": "^10.3",
+    "drush/drush": "^11",
     "drupal/purge": "^3.4",
-    "drupal/section_purger": "dev-updates_to_compatible_with_drupal_9",
-    "drupal/redis": "^1.0",
+    "drupal/section_purge": "dev-3307199-drupal-10-compatibility",
+    "drupal/redis": "1.6",
     "drupal/smtp": "^1.2",
-    "dpc-sdp/tide_logs": "1.0.0",
+    "dpc-sdp/tide_logs": "dev-feature/SRM-874-d10-update",
     "cweagans/composer-patches": "^1.7"
   },
   "config": {
@@ -27,19 +27,19 @@
     }
   },
   "exclude": [
-    "drupal/section_purger"
+    "drupal/section_purge"
   ],
   "repositories": {
     "drupal": {
       "type": "composer",
-      "url": "https://packages.drupal.org/8",
+      "url": "https://packages.drupal.org/10",
       "exclude": [
-        "drupal/section_purger"
+        "drupal/section_purge"
       ]
     },
-    "drupal/section_purger": {
+    "drupal/section_purge": {
       "type": "git",
-      "url": "https://git.drupalcode.org/issue/section_purge-3227034.git"
+      "url": "https://git.drupalcode.org/issue/section_purge-3307199"
     }
   },
   "minimum-stability": "dev",
