@@ -6,6 +6,6 @@ core_version_requirement: ^9 || ^10
 dependencies:
   - purge:purge
   - redis:redis
-  - section_purge:section_purge
+  - section_purger:section_purger
   - smtp:smtp
   - tide_logs:tide_logs

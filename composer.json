@@ -6,7 +6,7 @@
   "require": {
     "drush/drush": "^11",
     "drupal/purge": "^3.4",
-    "drupal/section_purge": "dev-3307199-drupal-10-compatibility",
+    "drupal/section_purger": "dev-3307199-drupal-10-compatibility",
     "drupal/redis": "1.6",
     "drupal/smtp": "^1.2",
     "dpc-sdp/tide_logs": "dev-feature/SRM-874-d10-update",
@@ -27,7 +27,7 @@
     }
   },
   "exclude": [
-    "drupal/section_purge"
+    "drupal/section_purger"
   ],
   "repositories": {
     "drupal": {
@@ -37,7 +37,7 @@
         "drupal/section_purge"
       ]
     },
-    "drupal/section_purge": {
+    "drupal/section_purger": {
       "type": "vcs",
       "no-api": true,
       "url": "https://git.drupalcode.org/issue/section_purge-3307199.git"
