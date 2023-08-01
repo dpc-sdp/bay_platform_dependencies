@@ -61,3 +61,15 @@ function bay_platform_dependencies_update_8001() {
     }
   }
 }
+
+/**
+ * Enable section purge module with new name change.
+ */
+function bay_platform_dependencies_update_8002() {
+  // Check if module is both installed and enabled.
+  if (\Drupal::moduleHandler()->moduleExists('section_purger')) {
+    // If exists, uninstall module.
+    \Drupal::service('module_installer')->uninstall(['section_purger']);
+  }
+  \Drupal::service('module_installer')->install(['section_purge']);
+}
