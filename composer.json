@@ -7,6 +7,7 @@
     "drush/drush": "^11",
     "drupal/purge": "^3.4",
     "drupal/section_purge": "dev-3307199-drupal-10-compatibility",
+    "drupal/section_purger": "dev-updates_to_compatible_with_drupal_9",
     "drupal/redis": "1.6",
     "drupal/smtp": "^1.2",
     "dpc-sdp/tide_logs": "dev-feature/SRM-874-d10-update",
