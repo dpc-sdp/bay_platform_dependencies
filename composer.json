@@ -26,23 +26,6 @@
       }
     }
   },
-  "exclude": [
-    "dpc-sdp/section_purge"
-  ],
-  "repositories": {
-    "drupal": {
-      "type": "composer",
-      "url": "https://packages.drupal.org/10",
-      "exclude": [
-        "dpc-sdp/section_purge"
-      ]
-    },
-    "dpc-sdp/section_purge": {
-      "type": "vcs",
-      "no-api": true,
-      "url": "https://github.com/dpc-sdp/section_purge.git"
-    }
-  },
   "minimum-stability": "dev",
   "prefer-stable": true
 }
