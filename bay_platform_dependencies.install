@@ -22,7 +22,7 @@ function bay_platform_dependencies_uninstall() {
 /**
  * Update section purger plugin to sectionbundled
  */
-function bay_platform_dependencies_update_8001() {
+function bay_platform_dependencies_update_10100() {
   $config_factory = \Drupal::configFactory();
 
   // Update section purger plugin settings 
@@ -65,7 +65,7 @@ function bay_platform_dependencies_update_8001() {
 /**
  * Enable section purge module with new name change.
  */
-function bay_platform_dependencies_update_8002() {
+function bay_platform_dependencies_update_10102() {
   // Update section purger plugin settings.
   $source_config = \Drupal::config('section_purger.settings.8714ff77fc');
   $source_config_values = $source_config->get();
