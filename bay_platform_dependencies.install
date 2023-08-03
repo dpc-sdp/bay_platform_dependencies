@@ -66,10 +66,19 @@ function bay_platform_dependencies_update_8001() {
  * Enable section purge module with new name change.
  */
 function bay_platform_dependencies_update_8002() {
+  // Update section purger plugin settings.
+  $source_config = \Drupal::config('section_purger.settings.8714ff77fc');
+  $source_config_values = $source_config->get();
   // Check if module is both installed and enabled.
   if (\Drupal::moduleHandler()->moduleExists('section_purger')) {
     // If exists, uninstall module.
     \Drupal::service('module_installer')->uninstall(['section_purger']);
   }
-  \Drupal::service('module_installer')->install(['section_purge']);
+  // Replace 'section_purger' with 'section_purge'.
+  $module_name = ['section_purge'];
+  \Drupal::service('module_installer')->install($module_name);
+
+  $config = \Drupal::configFactory()->getEditable('section_purge.settings.8714ff77fc');
+  $config->setData($source_config_values);
+  $config->save();
 }
