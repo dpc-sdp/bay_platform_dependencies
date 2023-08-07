@@ -34,14 +34,8 @@ function bay_platform_dependencies_form_webform_handler_form_alter(&$form, \Drup
   }
   
   _bay_platform_dependencies_form_webform_handler_form_options($form["settings"]["from"]["from_mail"]["from_mail"], $smtp_allowlist);
-  
-  $restricted_additional_elements = [
-    "return_path",
-    "sender_mail",
-  ];
-  foreach ($restricted_additional_elements as $element) {
-    _bay_platform_dependencies_form_webform_handler_form_options($form["settings"]["additional"][$element][$element], $smtp_allowlist);
-  }
+  _bay_platform_dependencies_form_webform_handler_form_options($form["settings"]["additional"]["return_path"]["return_path"], $smtp_allowlist);
+  _bay_platform_dependencies_form_webform_handler_form_options($form["settings"]["additional"]["sender_mail"]["sender_mail"], $smtp_allowlist);
 }
 
 function _bay_platform_dependencies_form_webform_handler_form_options(&$element, array $smtp_allowlist) {
