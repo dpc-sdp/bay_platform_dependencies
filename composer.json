@@ -10,6 +10,7 @@
     "drupal/redis": "^1.0",
     "drupal/smtp": "^1.2",
     "dpc-sdp/tide_logs": "1.0.0",
+    "dpc-sdp/bay_monitoring": "^1.0",
     "cweagans/composer-patches": "^1.7"
   },
   "config": {
@@ -40,6 +41,11 @@
     "drupal/section_purger": {
       "type": "git",
       "url": "https://git.drupalcode.org/issue/section_purge-3227034.git"
+    },
+    "dpc-sdp/bay_monitoring": {
+      "no-api": true,
+      "type": "vcs",
+      "url": "https://github.com/dpc-sdp/bay_monitoring.git"
     }
   },
   "minimum-stability": "dev",
