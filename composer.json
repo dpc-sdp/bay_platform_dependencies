@@ -10,7 +10,7 @@
     "drupal/redis": "^1.0",
     "drupal/smtp": "^1.2",
     "dpc-sdp/tide_logs": "1.0.0",
-    "dpc-sdp/bay_monitoring": "dev-feature/DDS-72-external-service-monitoring",
+    "dpc-sdp/bay_monitoring": "^1.0",
     "cweagans/composer-patches": "^1.7"
   },
   "config": {
