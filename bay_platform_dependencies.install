@@ -22,6 +22,6 @@ function bay_platform_dependencies_uninstall() {
 /**
  * Enable bay_monitoring.
  */
-function bay_platform_dependencies_update_8001() {
+function bay_platform_dependencies_update_8002() {
   \Drupal::service('module_installer')->install(['bay_monitoring']);
 }
