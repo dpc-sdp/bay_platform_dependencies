@@ -4,7 +4,7 @@
   "type": "drupal-module",
   "license": "GPL-2.0-or-later",
   "require": {
-    "drush/drush": "^11",
+    "drush/drush": "^10",
     "drupal/purge": "^3.4",
     "drupal/section_purge": "dev-3307199-drupal-10-compatibility",
     "drupal/section_purger": "dev-updates_to_compatible_with_drupal_9",
