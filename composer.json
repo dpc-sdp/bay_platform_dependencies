@@ -11,6 +11,7 @@
     "drupal/redis": "1.6",
     "drupal/smtp": "^1.2",
     "dpc-sdp/tide_logs": "2.0.0",
+    "dpc-sdp/bay_monitoring": "^1.0",
     "cweagans/composer-patches": "^1.7"
   },
   "config": {
@@ -23,8 +24,29 @@
     "enable-patching": true,
     "patches": {
       "drupal/redis": {
-        "Implement initial RedisCluster client integration - https://www.drupal.org/project/redis/issues/2900947#comment-14779350": "https://www.drupal.org/files/issues/2022-11-10/2900947-57.patch"
+        "Implement initial RedisCluster client integration - https://www.drupal.org/project/redis/issues/2900947": "./patches/redis/2900947-implement-initial-rediscluster_19.patch"
       }
+    }
+  },
+  "exclude": [
+    "drupal/section_purger"
+  ],
+  "repositories": {
+    "drupal": {
+      "type": "composer",
+      "url": "https://packages.drupal.org/8",
+      "exclude": [
+        "drupal/section_purger"
+      ]
+    },
+    "drupal/section_purger": {
+      "type": "git",
+      "url": "https://git.drupalcode.org/issue/section_purge-3227034.git"
+    },
+    "dpc-sdp/bay_monitoring": {
+      "no-api": true,
+      "type": "vcs",
+      "url": "https://github.com/dpc-sdp/bay_monitoring.git"
     }
   },
   "minimum-stability": "dev",

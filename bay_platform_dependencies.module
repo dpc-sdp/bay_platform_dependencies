@@ -5,6 +5,8 @@
  * Primary module hooks for bay-platform-dependencies module.
  */
 
+const BPD_ENV_SMTP_ALLOWLIST = "SMTP_FROM_WHITELIST";
+
 /**
  * Implements hook_mail_alter().
  */
@@ -20,4 +22,63 @@ function bay_platform_dependencies_mail_alter(&$message) {
     $message['reply-to'] = $reply_to;
     $message['headers']['Reply-to'] = $reply_to;
   }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function bay_platform_dependencies_form_webform_handler_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state) {
+  $smtp_allowlist = _bay_platform_dependencies_smtp_allowlist();
+  if (!$smtp_allowlist) {
+    return;
+  }
+  
+  _bay_platform_dependencies_form_webform_handler_form_options($form["settings"]["from"]["from_mail"]["from_mail"], $smtp_allowlist);
+  _bay_platform_dependencies_form_webform_handler_form_options($form["settings"]["additional"]["return_path"]["return_path"], $smtp_allowlist);
+  _bay_platform_dependencies_form_webform_handler_form_options($form["settings"]["additional"]["sender_mail"]["sender_mail"], $smtp_allowlist);
+}
+
+function _bay_platform_dependencies_form_webform_handler_form_options(&$element, array $smtp_allowlist) {
+  // Remove ability to choose element values.
+  unset($element['#options']["Elements"]);
+  unset($element['#options']["Options"]);
+  
+  // Remove ability to choose contextual values.
+  $element['#options']["Other"] = [];
+  foreach ($smtp_allowlist as $email) {
+    $element['#options']["Other"][$email] = $email;
+  }
+  
+  // Add validation to ensure "other" values meet allowlist.
+  $element["#element_validate"][] = "bay_platform_dependencies_form_webform_handler_form_element_validate";
+}
+
+/**
+ * Validation handler for email options elements.
+ */
+function bay_platform_dependencies_form_webform_handler_form_element_validate($element, &$form_state) {
+  $value = $form_state->getValue($element['#parents']);
+  if (empty($value) || $value == "_default") {
+    return;
+  }
+  
+  if (!in_array($value, _bay_platform_dependencies_smtp_allowlist())) {
+    $error = \Drupal::translation()->translate("Disallowed email address submitted - %email", ["%email" => $value]);
+    $form_state->setErrorByName(implode("][", $element['#parents']), $error);
+  }
+}
+
+/**
+ * Helper function which returns the permitted email addresses.
+ *
+ * @returns array|bool
+ *  Array of allowed emails, or
+ *  FALSE is not configured.
+ */
+function _bay_platform_dependencies_smtp_allowlist() {
+  $list = getenv(BPD_ENV_SMTP_ALLOWLIST);
+  if (empty($list)) {
+    return FALSE;
+  }
+  return explode(",", $list);
 }

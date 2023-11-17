@@ -82,3 +82,10 @@ function bay_platform_dependencies_update_10002() {
   $config->setData($source_config_values);
   $config->save();
 }
+
+/**
+ * Enable bay_monitoring.
+ */
+function bay_platform_dependencies_update_10003() {
+  \Drupal::service('module_installer')->install(['bay_monitoring']);
+}
