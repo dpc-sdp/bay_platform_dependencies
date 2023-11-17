@@ -10,7 +10,7 @@
     "drupal/section_purger": "dev-updates_to_compatible_with_drupal_9",
     "drupal/redis": "1.6",
     "drupal/smtp": "^1.2",
-    "dpc-sdp/tide_logs": "dev-feature/SRM-874-d10-update",
+    "dpc-sdp/tide_logs": "2.0.0",
     "cweagans/composer-patches": "^1.7"
   },
   "config": {
