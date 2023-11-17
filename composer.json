@@ -11,7 +11,7 @@
     "drupal/redis": "1.6",
     "drupal/smtp": "^1.2",
     "dpc-sdp/tide_logs": "2.0.0",
-    "dpc-sdp/bay_monitoring": "^1.0",
+    "dpc-sdp/bay_monitoring": "^2.0",
     "cweagans/composer-patches": "^1.7"
   },
   "config": {
