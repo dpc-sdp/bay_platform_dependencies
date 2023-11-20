@@ -4,13 +4,14 @@
   "type": "drupal-module",
   "license": "GPL-2.0-or-later",
   "require": {
-    "drush/drush": "^10.3",
+    "drush/drush": "^11",
     "drupal/purge": "^3.4",
+    "drupal/section_purge": "dev-3307199-drupal-10-compatibility",
     "drupal/section_purger": "dev-updates_to_compatible_with_drupal_9",
-    "drupal/redis": "^1.0",
+    "drupal/redis": "1.6",
     "drupal/smtp": "^1.2",
-    "dpc-sdp/tide_logs": "1.0.0",
-    "dpc-sdp/bay_monitoring": "^1.0",
+    "dpc-sdp/tide_logs": "2.0.0",
+    "dpc-sdp/bay_monitoring": "^2.0",
     "cweagans/composer-patches": "^1.7"
   },
   "config": {
@@ -35,12 +36,13 @@
       "type": "composer",
       "url": "https://packages.drupal.org/8",
       "exclude": [
-        "drupal/section_purger"
+        "drupal/section_purge"
       ]
     },
-    "drupal/section_purger": {
-      "type": "git",
-      "url": "https://git.drupalcode.org/issue/section_purge-3227034.git"
+    "drupal/section_purge": {
+      "type": "vcs",
+      "no-api": true,
+      "url": "https://github.com/dpc-sdp/section_purge.git"
     },
     "dpc-sdp/bay_monitoring": {
       "no-api": true,
