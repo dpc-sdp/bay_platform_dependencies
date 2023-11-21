@@ -24,7 +24,7 @@
     "enable-patching": true,
     "patches": {
       "drupal/redis": {
-        "Implement initial RedisCluster client integration - https://www.drupal.org/project/redis/issues/2900947": "./patches/redis/2900947-implement-initial-rediscluster_19.patch"
+        "Implement initial RedisCluster client integration - https://www.drupal.org/project/redis/issues/2900947#comment-14779350": "https://www.drupal.org/files/issues/2022-11-10/2900947-57.patch"
       }
     }
   },
