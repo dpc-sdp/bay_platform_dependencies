@@ -4,6 +4,7 @@ description: Drupal integrations and dependency management for the Bay hosting p
 package: SDP Bay
 core_version_requirement: ^9 || ^10
 dependencies:
+  - bay_monitoring:bay_monitoring
   - purge:purge
   - drush:drush
   - redis:redis
