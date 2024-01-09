@@ -6,7 +6,6 @@ core_version_requirement: ^9 || ^10
 dependencies:
   - bay_monitoring:bay_monitoring
   - purge:purge
-  - drush:drush
   - redis:redis
   - section_purge:section_purge
   - smtp:smtp
