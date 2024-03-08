@@ -5,6 +5,8 @@
  * Primary module hooks for bay-platform-dependencies module.
  */
 
+use Drupal\Core\Render\BubbleableMetadata;
+
 const BPD_ENV_SMTP_ALLOWLIST = "SMTP_FROM_WHITELIST";
 
 /**
@@ -81,4 +83,37 @@ function _bay_platform_dependencies_smtp_allowlist() {
     return FALSE;
   }
   return explode(",", $list);
+}
+
+function bay_platform_dependencies_token_info() {
+  $info = [];
+
+  $info['tokens']['bay_platform_dependencies']['k8s-service-account-token'] = [
+    'name' => t('Kubernetes Service Account Token'),
+    'description' => t('A token which retrieves the current value from /var/run/secrets/kubernetes.io/serviceaccount/token.'),
+  ];
+
+  return $info;
+}
+
+/**
+ * Implements hook_tokens().
+ */
+function bay_platform_dependencies_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
+  $replacements = [];
+  if ($type == 'bay_platform_dependencies') {
+    foreach ($tokens as $name => $original) {
+      switch ($name) {
+        case 'k8s-service-account-token':
+          if (file_exists('/var/run/secrets/kubernetes.io/serviceaccount/token')) {
+            $token = file_get_contents('/var/run/secrets/kubernetes.io/serviceaccount/token');
+            ($token === FALSE) ? $replacements[$original] = '' : $replacements[$original] = $token;
+          } else {
+            $replacements[$original] = '';
+          }
+          break;
+      }
+    }
+  }
+  return $replacements;
 }
