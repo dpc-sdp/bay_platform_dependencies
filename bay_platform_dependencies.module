@@ -85,6 +85,9 @@ function _bay_platform_dependencies_smtp_allowlist() {
   return explode(",", $list);
 }
 
+/**
+ * Implements hook_token_info().
+ */
 function bay_platform_dependencies_token_info() {
   $info = [];
 
