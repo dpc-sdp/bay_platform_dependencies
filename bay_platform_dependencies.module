@@ -8,6 +8,7 @@
 use Drupal\Core\Render\BubbleableMetadata;
 
 const BPD_ENV_SMTP_ALLOWLIST = "SMTP_FROM_WHITELIST";
+const K8S_SERVICE_ACCOUNT_PATH = "/var/run/secrets/kubernetes.io/serviceaccount/token";
 
 /**
  * Implements hook_mail_alter().
@@ -108,9 +109,12 @@ function bay_platform_dependencies_tokens($type, $tokens, array $data, array $op
     foreach ($tokens as $name => $original) {
       switch ($name) {
         case 'k8s-service-account-token':
-          if (file_exists('/var/run/secrets/kubernetes.io/serviceaccount/token')) {
-            $token = file_get_contents('/var/run/secrets/kubernetes.io/serviceaccount/token');
-            ($token === FALSE) ? $replacements[$original] = '' : $replacements[$original] = $token;
+          if (file_exists(K8S_SERVICE_ACCOUNT_PATH)) {
+            $token = file_get_contents(K8S_SERVICE_ACCOUNT_PATH);
+            if ($token === FALSE) {
+              throw new \Exception(sprintf("Failed to read service account token at %s", K8S_SERVICE_ACCOUNT_PATH));
+            }
+            $replacements[$original] = $token;
           } else {
             $replacements[$original] = '';
           }
