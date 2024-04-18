@@ -5,6 +5,8 @@
  * Install, update and uninstall functions for the bay-platform-dependencies module.
  */
 
+use Drush\Drush;
+
 /**
  * Implements hook_install().
  */
@@ -87,4 +89,12 @@ function bay_platform_dependencies_update_10002() {
  */
 function bay_platform_dependencies_update_10003() {
   \Drupal::service('module_installer')->install(['bay_monitoring']);
+}
+
+/**
+ * Install the Section sensor.
+ */
+function bay_platform_dependencies_update_10004() {
+  $process = Drush::drush(Drush::aliasManager()->getSelf(), 'section_purger:install_sensor');
+  $process->run();
 }
