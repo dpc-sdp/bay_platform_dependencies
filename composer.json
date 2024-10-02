@@ -23,7 +23,7 @@
     "enable-patching": true,
     "patches": {
       "drupal/redis": {
-        "Implement initial RedisCluster client integration - https://www.drupal.org/project/redis/issues/2900947#mr19-note360450": "https://gist.githubusercontent.com/nicksantamaria/0e0c91aa0a33359f055165b49df59f04/raw/aa3ca97d5364dc948d84cf749dc55a12064b159d/drupal-redis-1.8-redis-cluster-newrelic.patch"
+        "Implement initial RedisCluster client integration - https://www.drupal.org/project/redis/issues/2900947#mr19-note360450": "https://git.drupalcode.org/project/redis/-/merge_requests/19.diff"
       }
     }
   },
