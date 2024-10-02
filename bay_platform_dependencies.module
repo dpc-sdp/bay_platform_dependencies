@@ -3,6 +3,8 @@
 /**
  * @file
  * Primary module hooks for bay-platform-dependencies module.
+ *
+ * Test.
  */
 
 use Drupal\Core\Render\BubbleableMetadata;
