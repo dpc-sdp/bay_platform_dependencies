@@ -5,13 +5,13 @@
   "license": "GPL-2.0-or-later",
   "require": {
     "drush/drush": "^13",
-    "drupal/purge": "^3.4",
+    "drupal/purge": "^3.6.0",
     "drupal/section_purge": "4.x",
-    "drupal/redis": "1.6",
-    "drupal/smtp": "^1.2",
+    "drupal/redis": "1.9.0",
+    "drupal/smtp": "^1.4.0",
     "dpc-sdp/tide_logs": "^2.0.1",
-    "dpc-sdp/bay_monitoring": "^2.0",
-    "cweagans/composer-patches": "^1.7"
+    "dpc-sdp/bay_monitoring": "^2.1.0",
+    "cweagans/composer-patches": "^1.7.3"
   },
   "config": {
     "allow-plugins": {
