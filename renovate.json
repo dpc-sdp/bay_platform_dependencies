@@ -1,35 +1,67 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:base"
+    "config:recommended"
   ],
-  "schedule": ["* 9-10 * * 4"],
+  "schedule": [
+    "* 9-10 * * 4"
+  ],
   "rangeStrategy": "bump",
   "prConcurrentLimit": 5,
   "prHourlyLimit": 2,
-  "stabilityDays": 3,
-  "labels": ["dependencies", "automated-pr"],
+  "minimumReleaseAge": "3 days",
+  "labels": [
+    "dependencies",
+    "automated-pr"
+  ],
   "vulnerabilityAlerts": {
-    "labels": ["security"],
+    "labels": [
+      "security"
+    ],
     "prPriority": 1
   },
   "packageRules": [
     {
-      "matchManagers": ["composer"],
-      "matchDepTypes": ["require", "require-dev"],
-      "matchUpdateTypes": ["patch", "minor"],
+      "matchManagers": [
+        "composer"
+      ],
+      "matchDepTypes": [
+        "require",
+        "require-dev"
+      ],
+      "matchUpdateTypes": [
+        "patch",
+        "minor"
+      ],
       "groupName": "Composer dependencies",
-      "labels": ["composer"]
+      "labels": [
+        "composer"
+      ]
     },
     {
-      "matchManagers": ["composer"],
-      "matchDepTypes": ["require", "require-dev"],
-      "matchUpdateTypes": ["major"],
+      "matchManagers": [
+        "composer"
+      ],
+      "matchDepTypes": [
+        "require",
+        "require-dev"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
       "groupName": "Major Composer dependencies",
-      "labels": ["composer", "major-update"]
+      "labels": [
+        "composer",
+        "major-update"
+      ]
     },
     {
-      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "pin",
+        "digest"
+      ],
       "automerge": true
     }
   ]
