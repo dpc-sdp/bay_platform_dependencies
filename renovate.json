@@ -3,7 +3,7 @@
   "extends": [
     "config:base"
   ],
-  "schedule": ["after 9am and before 10am on every wednesday"],
+  "schedule": ["0 9-10 * * 4"],
   "rangeStrategy": "bump",
   "prConcurrentLimit": 5,
   "prHourlyLimit": 2,
