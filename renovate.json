@@ -3,14 +3,34 @@
   "extends": [
     "config:base"
   ],
+  "schedule": ["after 9am and before 10am on every wednesday"],
+  "rangeStrategy": "bump",
+  "prConcurrentLimit": 5,
+  "prHourlyLimit": 2,
+  "stabilityDays": 3,
+  "labels": ["dependencies", "automated-pr"],
+  "vulnerabilityAlerts": {
+    "labels": ["security"],
+    "prPriority": 1
+  },
   "packageRules": [
     {
       "matchManagers": ["composer"],
       "matchDepTypes": ["require", "require-dev"],
-      "groupName": "Composer dependencies"
+      "matchUpdateTypes": ["patch", "minor"],
+      "groupName": "Composer dependencies",
+      "labels": ["composer"]
+    },
+    {
+      "matchManagers": ["composer"],
+      "matchDepTypes": ["require", "require-dev"],
+      "matchUpdateTypes": ["major"],
+      "groupName": "Major Composer dependencies",
+      "labels": ["composer", "major-update"]
+    },
+    {
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "automerge": true
     }
-  ],
-  "rangeStrategy": "bump",
-  "prConcurrentLimit": 5,
-  "labels": ["composer", "dependencies", "automated-pr"]
+  ]
 }
