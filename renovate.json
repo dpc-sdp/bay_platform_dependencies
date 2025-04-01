@@ -3,7 +3,7 @@
   "extends": [
     "config:base"
   ],
-  "schedule": ["0 9-10 * * 4"],
+  "schedule": ["* 9-10 * * 4"],
   "rangeStrategy": "bump",
   "prConcurrentLimit": 5,
   "prHourlyLimit": 2,
