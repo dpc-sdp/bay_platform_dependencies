@@ -4,7 +4,7 @@
   "type": "drupal-module",
   "license": "GPL-2.0-or-later",
   "require": {
-    "drush/drush": "^12",
+    "drush/drush": "^13",
     "drupal/purge": "^3.4",
     "drupal/section_purge": "4.x",
     "drupal/redis": "1.6",
