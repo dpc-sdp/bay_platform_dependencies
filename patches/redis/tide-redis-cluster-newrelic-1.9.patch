@@ -1,0 +1,217 @@
+diff --git a/src/Cache/PhpRedisCluster.php b/src/Cache/PhpRedisCluster.php
+index 6377969..4a41038 100644
+--- a/src/Cache/PhpRedisCluster.php
++++ b/src/Cache/PhpRedisCluster.php
+@@ -18,6 +18,20 @@ class PhpRedisCluster extends CacheBase {
+    */
+   protected $client;
+ 
++  /**
++   * The sample rate for New Relic metrics.
++   *
++   * @var float
++   */
++  private $sampleRate = 0.1;
++  
++  /**
++   * Reference for the redis hostname used in new relic traces.
++   *
++   * @var string
++   */
++  protected $redisHost;
++
+   /**
+    * Creates a PhpRedisCluster cache backend.
+    *
+@@ -34,22 +48,86 @@ class PhpRedisCluster extends CacheBase {
+     parent::__construct($bin, $serializer);
+     $this->client = $client;
+     $this->checksumProvider = $checksum_provider;
++    $this->sampleRate = getenv('NEW_RELIC_SAMPLE_RATE') ?: 0.1;
++    $this->redisHost = getenv('REDIS_HOST') ?: 'redis';
++  }
++
++  /**
++   * Logs Redis event metrics to New Relic.
++   *
++   * @param array $before
++   *   The Redis info array before the operation.
++   * @param array $after
++   *   The Redis info array after the operation.
++   */
++  public function logEventMetrics($before, $after) {
++    if (!function_exists('newrelic_custom_metric')) {
++      // New Relic is not enabled.
++      return;
++    }
++    
++    if (!isset($before['event_wait']) || !isset($after['event_wait']) || !isset($before['event_no_wait']) || !isset($after['event_no_wait'])) {
++      return;
++    }
++    
++    $delta_wait = $after['event_wait'] - $before['event_wait'];
++    $delta_no_wait = $after['event_no_wait'] - $before['event_no_wait'];
++    $delta_wait_count = $after['event_wait_count'] - $before['event_wait_count'];
++    $delta_no_wait_count = $after['event_no_wait_count'] - $before['event_no_wait_count'];
++    
++    newrelic_custom_metric('Custom/Redis/Get/DeltaEventWait', $delta_wait);
++    newrelic_custom_metric('Custom/Redis/Get/DeltaEventNoWait', $delta_no_wait);
++    newrelic_custom_metric('Custom/Redis/Get/DeltaEventWaitCount', $delta_wait_count);
++    newrelic_custom_metric('Custom/Redis/Get/DeltaEventNoWaitCount', $delta_no_wait_count);
++    
++    $numerator = ($delta_wait + $delta_wait_count);
++    $denominator = ($delta_wait + $delta_no_wait + $delta_wait_count + $delta_no_wait_count);
++    $wait_ratio = ($denominator > 0) ? $numerator / $denominator : 0;
++    newrelic_custom_metric('Custom/Redis/Get/WaitRatio', $wait_ratio);
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+   public function getMultiple(&$cids, $allow_invalid = FALSE) {
++    $shouldLog = mt_rand() / mt_getrandmax() < $this->sampleRate;
++
+     // Avoid an error when there are no cache ids.
+     if (empty($cids)) {
+       return [];
+     }
+ 
+     $return = [];
++    $before = [];
++    $after = [];
++
++    if ($shouldLog) {
++      try {
++        $before = $this->client->info('cluster');
++      }
++      catch (\RedisClusterException $e) {
++        if (\Drupal::hasService('logger.factory')) {
++          \Drupal::logger('redis')->critical('Redis cluster exception for key %key', [
++            '%key' => implode(",", $cids),
++          ]);
++        }
++      }
++    }
+ 
+     // Build the list of keys to fetch.
+     foreach (array_map([$this, 'getKey'], $cids) as $key) {
+-      $result[] = $this->client->hGetAll($key);
++      if (function_exists('newrelic_record_datastore_segment')) {
++        $result[] = newrelic_record_datastore_segment(function () use ($key) {
++          return $this->client->hGetAll($key);
++        }, [
++          'product' => 'RedisCluster',
++          'collection' => $key,
++          'operation' => 'hGetAll',
++          'host' => $this->redisHost,
++        ]);
++      } else {
++        $result[] = $this->client->hGetAll($key);
++      }
+     }
+ 
+     // Loop over the cid values to ensure numeric indexes.
+@@ -67,6 +145,21 @@ class PhpRedisCluster extends CacheBase {
+     // Remove fetched cids from the list.
+     $cids = array_diff($cids, array_keys($return));
+ 
++    if ($shouldLog) {
++      try {
++        $after = $this->client->info('cluster');
++      }
++      catch (\RedisClusterException $e) {
++        if (\Drupal::hasService('logger.factory')) {
++          \Drupal::logger('redis')->critical('Redis cluster exception for key %key', [
++            '%key' => $key,
++          ]);
++        }
++        throw $e;
++      }
++      $this->logEventMetrics($before, $after);
++    }
++
+     return $return;
+   }
+ 
+@@ -74,6 +167,7 @@ class PhpRedisCluster extends CacheBase {
+    * {@inheritdoc}
+    */
+   public function set($cid, $data, $expire = Cache::PERMANENT, array $tags = []) {
++    $shouldLog = mt_rand() / mt_getrandmax() < $this->sampleRate;
+ 
+     $ttl = $this->getExpiration($expire);
+ 
+@@ -84,10 +178,49 @@ class PhpRedisCluster extends CacheBase {
+       $this->delete($key);
+     }
+ 
++    if ($shouldLog) {
++      try {
++        $before = $this->client->info('cluster');
++      }
++      catch (\RedisClusterException $e) {
++        if (\Drupal::hasService('logger.factory')) {
++          \Drupal::logger('redis')->critical('Redis cluster exception for key %key', [
++            '%key' => $key,
++          ]);
++        }
++      }
++    }
++
+     // Build the cache item and save it as a hash array.
+     $entry = $this->createEntryHash($cid, $data, $expire, $tags);
+-    $this->client->hMset($key, $entry);
+-    $this->client->expire($key, $ttl);
++    if (function_exists('newrelic_record_datastore_segment')) {
++      newrelic_record_datastore_segment(function () use ($key, $entry, $ttl) {
++        $this->client->hMset($key, $entry);
++        $this->client->expire($key, $ttl);
++      }, [
++        'product' => 'RedisCluster',
++        'collection' => $key,
++        'operation' => 'hMset',
++        'host' => $this->redisHost,
++      ]);
++    } else {
++      $this->client->hMset($key, $entry);
++      $this->client->expire($key, $ttl);
++    }
++    
++    if ($shouldLog) {
++      try {
++        $after = $this->client->info('cluster');
++        $this->logEventMetrics($before, $after);
++      }
++      catch (\RedisClusterException $e) {
++        if (\Drupal::hasService('logger.factory')) {
++          \Drupal::logger('redis')->critical('Redis cluster exception for key %key', [
++            '%key' => $key,
++          ]);
++        }
++      }
++    }
+   }
+ 
+   /**
+@@ -95,7 +228,20 @@ class PhpRedisCluster extends CacheBase {
+    */
+   public function doDeleteMultiple(array $cids) {
+     $keys = array_map([$this, 'getKey'], $cids);
+-    $this->client->del($keys);
++    $keys_size = count($keys);
++    $collection = ($keys_size == 1) ? $keys[0] : sprintf('Array(len:%d)', $keys_size);
++    if (function_exists('newrelic_record_datastore_segment')) {
++      newrelic_record_datastore_segment(function () use ($keys, $collection) {
++        $this->client->del($keys);
++      }, [
++        'product' => 'RedisCluster',
++        'collection' => $collection,
++        'operation' => 'del',
++        'host' => $this->redisHost,
++      ]);
++    } else {
++      $this->client->del($keys);
++    }
+   }
+ 
+ }
