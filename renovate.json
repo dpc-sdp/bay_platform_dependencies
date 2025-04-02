@@ -6,7 +6,7 @@
   "schedule": [
     "* 9-10 * * 4"
   ],
-  "rangeStrategy": "bump",
+  "rangeStrategy": "auto",
   "prConcurrentLimit": 5,
   "prHourlyLimit": 2,
   "minimumReleaseAge": "3 days",
