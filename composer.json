@@ -7,9 +7,9 @@
     "drush/drush": "^13",
     "drupal/purge": "^3.4",
     "drupal/section_purge": "4.x",
-    "drupal/redis": "1.6",
+    "drupal/redis": "~1.8.0",
     "drupal/smtp": "^1.2",
-    "dpc-sdp/tide_logs": "^2.0.1",
+    "dpc-sdp/tide_logs": "^2.0",
     "dpc-sdp/bay_monitoring": "^2.0",
     "cweagans/composer-patches": "^1.7"
   },
@@ -23,7 +23,8 @@
     "enable-patching": true,
     "patches": {
       "drupal/redis": {
-        "Implement initial RedisCluster client integration - https://gist.github.com/nicksantamaria/0e0c91aa0a33359f055165b49df59f04 with new relic integration": "https://gist.githubusercontent.com/nicksantamaria/0e0c91aa0a33359f055165b49df59f04/raw/c498a55f3a7a086b38e54e493bf69015a2fa33ed/drupal-redis-1.6-redis-cluster-newrelic.patch"
+        "Implement initial RedisCluster client integration": "https://www.drupal.org/files/issues/2024-10-15/2900947-82.patch",
+        "New Relic tracing in RedisCluster client - depends on previous patch": "./patches/redis/tide-redis-cluster-newrelic-1.9.patch"
       }
     }
   },
