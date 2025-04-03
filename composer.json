@@ -24,7 +24,10 @@
     "patches": {
       "drupal/redis": {
         "Implement initial RedisCluster client integration": "https://www.drupal.org/files/issues/2024-10-15/2900947-82.patch",
-        "New Relic tracing in RedisCluster client - depends on previous patch": "./patches/redis/tide-redis-cluster-newrelic-1.9.patch"
+        "New Relic tracing in RedisCluster client - depends on previous patch": "https://raw.githubusercontent.com/dpc-sdp/bay_platform_dependencies/dfcb4fe39d30cbeeba0d9f7c2d7ec8cb3de8d38f/patches/redis/tide-redis-cluster-newrelic-1.9.patch"
+      },
+      "drush/drush": {
+        "Add --extra option to sql:create, sql:drop, and site:install": "https://patch-diff.githubusercontent.com/raw/drush-ops/drush/pull/6249.patch"
       }
     }
   },
