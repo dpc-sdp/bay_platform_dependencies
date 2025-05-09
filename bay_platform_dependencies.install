@@ -22,20 +22,20 @@ function bay_platform_dependencies_uninstall() {
 }
 
 /**
- * Update section purger plugin to sectionbundled
+ * Update section purger plugin to sectionbundled.
  */
 function bay_platform_dependencies_update_10001() {
   $config_factory = \Drupal::configFactory();
 
-  // Update section purger plugin settings 
+  // Update section purger plugin settings.
   $purge_plugins_config = $config_factory->getEditable('purge.plugins');
   $purgers = $purge_plugins_config->get('purgers');
 
   if (is_array($purgers)) {
     foreach ($purgers as &$purger) {
-      // Only update plugin_id for section purger
+      // Only update plugin_id for section purger.
       if (isset($purger['plugin_id']) && $purger['plugin_id'] === "section") {
-        // Update the plugin_id to section bundled
+        // Update the plugin_id to section bundled.
         $purger['plugin_id'] = 'sectionbundled';
         $purge_plugins_config->set('purgers', $purgers);
         $purge_plugins_config->save();
@@ -44,15 +44,15 @@ function bay_platform_dependencies_update_10001() {
     }
   }
 
-  // Update section purger logger channels settings
+  // Update section purger logger channels settings.
   $purge_logger_channels_config = $config_factory->getEditable('purge.logger_channels');
   $channels = $purge_logger_channels_config->get('channels');
   if (is_array($channels)) {
     foreach ($channels as &$channel) {
-      // Only update channel id for section purger
+      // Only update channel id for section purger.
       if (isset($channel['id']) && strpos($channel['id'], "purger_section_") === 0) {
         // Update the id to section bundled
-        // channel id is in the format of purger_section_{purger_id}
+        // channel id is in the format of purger_section_{purger_id}.
         $parts = explode('_', $channel['id']);
         $purger_id = end($parts);
         $channel['id'] = "purger_sectionbundled_{$purger_id}";
@@ -106,150 +106,151 @@ function bay_platform_dependencies_update_10004() {
 function bay_platform_dependencies_update_10005(&$sandbox) {
   $message = [];
   $translation = \Drupal::translation();
-  
-  // Initialize batch processing if this is the first pass
+
+  // Initialize batch processing if this is the first pass.
   if (!isset($sandbox['progress'])) {
     $sandbox['progress'] = 0;
     $sandbox['current_id'] = 0;
     $sandbox['max'] = \Drupal::entityTypeManager()->getStorage('webform')->getQuery()->count()->execute();
-    
-    // If there are no webforms, return immediately
+
+    // If there are no webforms, return immediately.
     if ($sandbox['max'] == 0) {
       $message[] = $translation->translate('No webforms found to update.');
       return $message;
     }
-    
-    // Initialize counters
+
+    // Initialize counters.
     $sandbox['fixed_count'] = 0;
     $sandbox['webforms_processed'] = 0;
   }
-  
-  // List of valid values for the settings
+
+  // List of valid values for the settings.
   $validValues = ['[site:mail]', '', '_default'];
-  
-  // Add values from SMTP_FROM_WHITELIST environment variable if it exists
+
+  // Add values from SMTP_FROM_WHITELIST environment variable if it exists.
   $whitelist = getenv('SMTP_FROM_WHITELIST');
   if ($whitelist) {
     $whitelistEmails = explode(',', $whitelist);
-    // Trim whitespace from each email
+    // Trim whitespace from each email.
     $whitelistEmails = array_map('trim', $whitelistEmails);
-    // Add whitelisted emails to valid values
+    // Add whitelisted emails to valid values.
     $validValues = array_merge($validValues, $whitelistEmails);
     $message[] = $translation->translate('Added @count email addresses from SMTP_FROM_WHITELIST to valid values.',
       ['@count' => count($whitelistEmails)]);
   }
-  
-  // Process webforms in chunks
-  $limit = 20; // Number of webforms to process per batch
+
+  // Process webforms in chunks.
+  // Number of webforms to process per batch.
+  $limit = 20;
   $webform_ids = \Drupal::entityTypeManager()->getStorage('webform')
     ->getQuery()
     ->condition('id', $sandbox['current_id'], '>')
     ->sort('id')
     ->range(0, $limit)
     ->execute();
-  
+
   if (empty($webform_ids)) {
-    // If no webforms were found, we're done
+    // If no webforms were found, we're done.
     $sandbox['#finished'] = 1;
     return $message;
   }
-  
+
   $webforms = \Drupal::entityTypeManager()->getStorage('webform')->loadMultiple($webform_ids);
-  
+
   foreach ($webforms as $webform) {
     $webformName = $webform->label();
     $webformId = $webform->id();
     $webformChanged = FALSE;
-    
-    // Get email handlers from the webform
+
+    // Get email handlers from the webform.
     $handlers = $webform->getHandlers();
-    
+
     foreach ($handlers as $handler_id => $handler) {
-      // Check if it's an email handler
+      // Check if it's an email handler.
       if ($handler->getPluginId() === 'email') {
         $configuration = $handler->getConfiguration();
         $settings = &$configuration['settings'];
         $handlerChanged = FALSE;
-        
+
         $handlerLabel = $handler->getLabel();
-        
-        // Check if return_path is not in the valid values list
+
+        // Check if return_path is not in the valid values list.
         if (isset($settings['return_path']) && !in_array($settings['return_path'], $validValues)) {
           $message[] = $translation->translate('Webform: @name (ID: @id), Email Handler: @handler, return_path is set to "@value" instead of a valid value',
             ['@name' => $webformName, '@id' => $webformId, '@handler' => $handlerLabel, '@value' => $settings['return_path']]);
-          
-          // Set return_path to empty string
+
+          // Set return_path to empty string.
           $oldValue = $settings['return_path'];
           $settings['return_path'] = '';
           $message[] = $translation->translate('  - FIXED: Changed return_path from "@old" to ""', ['@old' => $oldValue]);
           $handlerChanged = TRUE;
           $sandbox['fixed_count']++;
         }
-        
-        // Check if sender_mail is not in the valid values list
+
+        // Check if sender_mail is not in the valid values list.
         if (isset($settings['sender_mail']) && !in_array($settings['sender_mail'], $validValues)) {
           $message[] = $translation->translate('Webform: @name (ID: @id), Email Handler: @handler, sender_mail is set to "@value" instead of a valid value',
             ['@name' => $webformName, '@id' => $webformId, '@handler' => $handlerLabel, '@value' => $settings['sender_mail']]);
-          
-          // Set sender_mail to empty string
+
+          // Set sender_mail to empty string.
           $oldValue = $settings['sender_mail'];
           $settings['sender_mail'] = '';
           $message[] = $translation->translate('  - FIXED: Changed sender_mail from "@old" to ""', ['@old' => $oldValue]);
           $handlerChanged = TRUE;
           $sandbox['fixed_count']++;
         }
-        
-        // Check if from_mail is not in the valid values list and fix it by setting to '_default'
+
+        // Check if from_mail is not in the valid values list and fix it by setting to '_default'.
         if (isset($settings['from_mail']) && !in_array($settings['from_mail'], $validValues)) {
           $message[] = $translation->translate('Webform: @name (ID: @id), Email Handler: @handler, from_mail is set to "@value" instead of a valid value',
             ['@name' => $webformName, '@id' => $webformId, '@handler' => $handlerLabel, '@value' => $settings['from_mail']]);
-          
-          // Store the current from_mail value before changing it
+
+          // Store the current from_mail value before changing it.
           $oldFromMail = $settings['from_mail'];
-          
-          // Set from_mail to '_default'
+
+          // Set from_mail to '_default'.
           $settings['from_mail'] = '_default';
           $message[] = $translation->translate('  - FIXED: Changed from_mail from "@old" to "_default"', ['@old' => $oldFromMail]);
-          
-          // Also update reply_to to preserve the original email for replies
-          $oldReplyTo = isset($settings['reply_to']) ? $settings['reply_to'] : '';
+
+          // Also update reply_to to preserve the original email for replies.
+          $oldReplyTo = $settings['reply_to'] ?? '';
           $settings['reply_to'] = $oldFromMail;
           $message[] = $translation->translate('  - UPDATED: Set reply_to from "@old" to "@new"', ['@old' => $oldReplyTo, '@new' => $oldFromMail]);
-          
+
           $handlerChanged = TRUE;
           $sandbox['fixed_count']++;
         }
-        
-        // Update the handler configuration if changes were made
+
+        // Update the handler configuration if changes were made.
         if ($handlerChanged) {
           $handler->setConfiguration($configuration);
           $webformChanged = TRUE;
         }
       }
     }
-    
-    // Save the webform if any handlers were updated
+
+    // Save the webform if any handlers were updated.
     if ($webformChanged) {
       $webform->save();
       $message[] = $translation->translate('Saved changes to webform: @name (ID: @id)', ['@name' => $webformName, '@id' => $webformId]);
     }
-    
-    // Update progress information
+
+    // Update progress information.
     $sandbox['progress']++;
     $sandbox['webforms_processed']++;
     $sandbox['current_id'] = $webformId;
   }
-  
+
   // Set the value for finished. If there are no webforms, we're done.
   $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
-  
-  // If we're done, provide a summary message
+
+  // If we're done, provide a summary message.
   if ($sandbox['#finished'] >= 1) {
     if ($sandbox['fixed_count'] > 0) {
       $message[] = $translation->translate('Summary: Fixed @count issues with the following settings:', ['@count' => $sandbox['fixed_count']]);
       $message[] = $translation->translate('- return_path and sender_mail set to "" (empty string)');
       $message[] = $translation->translate('- from_mail set to "_default" and moved original from_mail value to reply_to');
-      
+
       $validValuesList = "'[site:mail]', '' (empty string), '_default'";
       if ($whitelist) {
         $validValuesList .= ', and whitelisted emails from SMTP_FROM_WHITELIST';
@@ -260,6 +261,6 @@ function bay_platform_dependencies_update_10005(&$sandbox) {
       $message[] = $translation->translate('No issues found. All email handlers in webforms have correct return_path, sender_mail, and from_mail settings.');
     }
   }
-  
+
   return implode("\n", $message);
 }
