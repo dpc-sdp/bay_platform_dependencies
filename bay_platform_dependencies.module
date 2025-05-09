@@ -8,8 +8,10 @@
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\BubbleableMetadata;
 
-const BPD_ENV_SMTP_ALLOWLIST = "SMTP_FROM_WHITELIST";
-const K8S_SERVICE_ACCOUNT_PATH = "/var/run/secrets/kubernetes.io/serviceaccount/token";
+// phpcs:disable
+const BAY_PLATFORM_DEPENDENCIES_ENV_SMTP_ALLOWLIST = "SMTP_FROM_WHITELIST";
+const BAY_PLATFORM_DEPENDENCIES_K8S_SERVICE_ACCOUNT_PATH = "/var/run/secrets/kubernetes.io/serviceaccount/token";
+// phpcs:enable
 
 /**
  * Implements hook_mail_alter().
@@ -43,7 +45,7 @@ function bay_platform_dependencies_form_webform_handler_form_alter(&$form, FormS
 }
 
 /**
- *
+ * Helper to alter form elements related to webform email handlers.
  */
 function _bay_platform_dependencies_form_webform_handler_form_options(&$element, array $smtp_allowlist) {
   // Remove ability to choose element values.
@@ -83,7 +85,7 @@ function bay_platform_dependencies_form_webform_handler_form_element_validate($e
  *  FALSE is not configured.
  */
 function _bay_platform_dependencies_smtp_allowlist() {
-  $list = getenv(BPD_ENV_SMTP_ALLOWLIST);
+  $list = getenv(BAY_PLATFORM_DEPENDENCIES_ENV_SMTP_ALLOWLIST);
   if (empty($list)) {
     return FALSE;
   }
@@ -113,10 +115,10 @@ function bay_platform_dependencies_tokens($type, $tokens, array $data, array $op
     foreach ($tokens as $name => $original) {
       switch ($name) {
         case 'k8s-service-account-token':
-          if (file_exists(K8S_SERVICE_ACCOUNT_PATH)) {
-            $token = file_get_contents(K8S_SERVICE_ACCOUNT_PATH);
+          if (file_exists(BAY_PLATFORM_DEPENDENCIES_K8S_SERVICE_ACCOUNT_PATH)) {
+            $token = file_get_contents(BAY_PLATFORM_DEPENDENCIES_K8S_SERVICE_ACCOUNT_PATH);
             if ($token === FALSE) {
-              throw new \Exception(sprintf("Failed to read service account token at %s", K8S_SERVICE_ACCOUNT_PATH));
+              throw new \Exception(sprintf("Failed to read service account token at %s", BAY_PLATFORM_DEPENDENCIES_K8S_SERVICE_ACCOUNT_PATH));
             }
             $replacements[$original] = $token;
           }
