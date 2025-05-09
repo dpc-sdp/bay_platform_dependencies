@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Install, update and uninstall functions for the bay-platform-dependencies module.
+ * Install, update, uninstall functions for bay-platform-dependencies module.
  */
 
 use Drush\Drush;
@@ -100,8 +100,10 @@ function bay_platform_dependencies_update_10004() {
 }
 
 /**
- * Fix webform email handler configurations by ensuring valid values for from_mail,
- * return_path, and sender_mail fields, and preserving original from_mail in reply_to.
+ * Fix webform email handler configurations.
+ *
+ * - Ensures valid values for from_mail, return_path, and sender_mail fields.
+ * - Preserves original from_mail in reply_to.
  */
 function bay_platform_dependencies_update_10005(&$sandbox) {
   $message = [];
@@ -165,7 +167,7 @@ function bay_platform_dependencies_update_10005(&$sandbox) {
     // Get email handlers from the webform.
     $handlers = $webform->getHandlers();
 
-    foreach ($handlers as $handler_id => $handler) {
+    foreach ($handlers as $handler) {
       // Check if it's an email handler.
       if ($handler->getPluginId() === 'email') {
         $configuration = $handler->getConfiguration();
@@ -176,8 +178,15 @@ function bay_platform_dependencies_update_10005(&$sandbox) {
 
         // Check if return_path is not in the valid values list.
         if (isset($settings['return_path']) && !in_array($settings['return_path'], $validValues)) {
-          $message[] = $translation->translate('Webform: @name (ID: @id), Email Handler: @handler, return_path is set to "@value" instead of a valid value',
-            ['@name' => $webformName, '@id' => $webformId, '@handler' => $handlerLabel, '@value' => $settings['return_path']]);
+          $message[] = $translation->translate(
+            'Webform: @name (ID: @id), Email Handler: @handler, return_path is set to "@value" instead of a valid value',
+            [
+              '@name' => $webformName,
+              '@id' => $webformId,
+              '@handler' => $handlerLabel,
+              '@value' => $settings['return_path'],
+            ],
+          );
 
           // Set return_path to empty string.
           $oldValue = $settings['return_path'];
@@ -189,8 +198,15 @@ function bay_platform_dependencies_update_10005(&$sandbox) {
 
         // Check if sender_mail is not in the valid values list.
         if (isset($settings['sender_mail']) && !in_array($settings['sender_mail'], $validValues)) {
-          $message[] = $translation->translate('Webform: @name (ID: @id), Email Handler: @handler, sender_mail is set to "@value" instead of a valid value',
-            ['@name' => $webformName, '@id' => $webformId, '@handler' => $handlerLabel, '@value' => $settings['sender_mail']]);
+          $message[] = $translation->translate(
+            'Webform: @name (ID: @id), Email Handler: @handler, sender_mail is set to "@value" instead of a valid value',
+            [
+              '@name' => $webformName,
+              '@id' => $webformId,
+              '@handler' => $handlerLabel,
+              '@value' => $settings['sender_mail'],
+            ],
+          );
 
           // Set sender_mail to empty string.
           $oldValue = $settings['sender_mail'];
@@ -200,10 +216,18 @@ function bay_platform_dependencies_update_10005(&$sandbox) {
           $sandbox['fixed_count']++;
         }
 
-        // Check if from_mail is not in the valid values list and fix it by setting to '_default'.
+        // Check if from_mail is not in the valid values list and fix it by
+        // setting to '_default'.
         if (isset($settings['from_mail']) && !in_array($settings['from_mail'], $validValues)) {
-          $message[] = $translation->translate('Webform: @name (ID: @id), Email Handler: @handler, from_mail is set to "@value" instead of a valid value',
-            ['@name' => $webformName, '@id' => $webformId, '@handler' => $handlerLabel, '@value' => $settings['from_mail']]);
+          $message[] = $translation->translate(
+            'Webform: @name (ID: @id), Email Handler: @handler, from_mail is set to "@value" instead of a valid value',
+            [
+              '@name' => $webformName,
+              '@id' => $webformId,
+              '@handler' => $handlerLabel,
+              '@value' => $settings['from_mail'],
+            ],
+          );
 
           // Store the current from_mail value before changing it.
           $oldFromMail = $settings['from_mail'];
@@ -215,7 +239,10 @@ function bay_platform_dependencies_update_10005(&$sandbox) {
           // Also update reply_to to preserve the original email for replies.
           $oldReplyTo = $settings['reply_to'] ?? '';
           $settings['reply_to'] = $oldFromMail;
-          $message[] = $translation->translate('  - UPDATED: Set reply_to from "@old" to "@new"', ['@old' => $oldReplyTo, '@new' => $oldFromMail]);
+          $message[] = $translation->translate('  - UPDATED: Set reply_to from "@old" to "@new"', [
+            '@old' => $oldReplyTo,
+            '@new' => $oldFromMail,
+          ]);
 
           $handlerChanged = TRUE;
           $sandbox['fixed_count']++;
@@ -232,7 +259,10 @@ function bay_platform_dependencies_update_10005(&$sandbox) {
     // Save the webform if any handlers were updated.
     if ($webformChanged) {
       $webform->save();
-      $message[] = $translation->translate('Saved changes to webform: @name (ID: @id)', ['@name' => $webformName, '@id' => $webformId]);
+      $message[] = $translation->translate('Saved changes to webform: @name (ID: @id)', [
+        '@name' => $webformName,
+        '@id' => $webformId,
+      ]);
     }
 
     // Update progress information.
