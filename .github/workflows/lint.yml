@@ -1,0 +1,29 @@
+name: Drupal Coding Standards
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  phpcs:
+    name: PHPCS
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          coverage: none
+
+      - name: Install PHPCS with Drupal standards
+        run: |
+          composer global require drupal/coder squizlabs/php_codesniffer dealerdirect/phpcodesniffer-composer-installer
+          phpcs --config-set installed_paths $HOME/.composer/vendor/drupal/coder/coder_sniffer
+
+      - name: Run PHPCS
+        run: |
+          phpcs --standard=Drupal,DrupalPractice --extensions=php,module,inc,install,test,profile,theme,css,info,txt,md,yml --ignore=vendor/,node_modules/ .
