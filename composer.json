@@ -24,6 +24,9 @@
     "patches": {
       "drupal/redis": {
         "Implement initial RedisCluster client integration - https://gist.github.com/nicksantamaria/0e0c91aa0a33359f055165b49df59f04 with new relic integration": "https://gist.githubusercontent.com/nicksantamaria/0e0c91aa0a33359f055165b49df59f04/raw/c498a55f3a7a086b38e54e493bf69015a2fa33ed/drupal-redis-1.6-redis-cluster-newrelic.patch"
+      },
+      "drupal/section_purge": {
+        "Update section_purge to support monitoring 1.18+ - https://www.drupal.org/project/section_purge/issues/3529971#comment-16145036": "https://www.drupal.org/files/issues/2025-06-13/section_purge-3529971_2.patch"
       }
     }
   },
