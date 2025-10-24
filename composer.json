@@ -7,7 +7,7 @@
     "drush/drush": "^13",
     "drupal/purge": "^3.4",
     "drupal/section_purge": "4.x",
-    "drupal/redis": "1.6.0",
+    "drupal/redis": "1.10.0",
     "drupal/smtp": "^1.2",
     "dpc-sdp/tide_logs": "^2.0",
     "dpc-sdp/bay_monitoring": "^2.0",
