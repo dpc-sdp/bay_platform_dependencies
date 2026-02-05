@@ -5,13 +5,13 @@
   "license": "GPL-2.0-or-later",
   "require": {
     "drush/drush": "^13",
-    "drupal/purge": "^3.4",
-    "drupal/section_purge": "4.x",
-    "drupal/redis": "1.6.0",
+    "drupal/purge": "^3.6",
+    "drupal/section_purge": "^5.0",
+    "drupal/redis": "^3.0",
     "drupal/smtp": "^1.2",
     "dpc-sdp/tide_logs": "^2.0",
     "dpc-sdp/bay_monitoring": "^2.0",
-    "cweagans/composer-patches": "^1.7"
+    "cweagans/composer-patches": "~2.0"
   },
   "config": {
     "allow-plugins": {
@@ -20,25 +20,28 @@
   },
   "extra": {
     "composer-exit-on-patch-failure": true,
-    "enable-patching": true,
-    "patches": {
-      "drupal/redis": {
-        "Implement initial RedisCluster client integration - https://gist.github.com/nicksantamaria/0e0c91aa0a33359f055165b49df59f04 with new relic integration": "https://gist.githubusercontent.com/nicksantamaria/0e0c91aa0a33359f055165b49df59f04/raw/c498a55f3a7a086b38e54e493bf69015a2fa33ed/drupal-redis-1.6-redis-cluster-newrelic.patch"
-      },
-      "drupal/section_purge": {
-        "Update section_purge to support monitoring 1.18+ - https://www.drupal.org/project/section_purge/issues/3529971#comment-16145036": "https://www.drupal.org/files/issues/2025-06-13/section_purge-3529971_2.patch"
-      }
-    }
+    "enable-patching": true
   },
   "repositories": {
     "drupal": {
       "type": "composer",
-      "url": "https://packages.drupal.org/8"
+      "url": "https://packages.drupal.org/8",
+      "exclude": ["drupal/section_purge", "dpc-sdp/redis"]
     },
     "dpc-sdp/bay_monitoring": {
       "no-api": true,
       "type": "vcs",
       "url": "https://github.com/dpc-sdp/bay_monitoring.git"
+    },
+    "dpc-sdp/section_purge": {
+      "no-api": true,
+      "type": "vcs",
+      "url": "https://github.com/dpc-sdp/section_purge.git"
+    },
+    "dpc-sdp/redis": {
+      "no-api": true,
+      "type": "vcs",
+      "url": "https://github.com/dpc-sdp/redis.git"
     }
   },
   "minimum-stability": "dev",
