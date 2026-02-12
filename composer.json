@@ -7,7 +7,7 @@
     "drush/drush": "^13",
     "drupal/purge": "^3.6",
     "drupal/section_purge": "^5.0",
-    "drupal/redis": "^3.0",
+    "drupal/redis": "^1.11",
     "drupal/smtp": "^1.2",
     "dpc-sdp/tide_logs": "dev-D11_compatibility as 2.0.1",
     "dpc-sdp/bay_monitoring": "dev-Drupal11_compatibility_upgrade as 2.2.2",
@@ -26,7 +26,7 @@
     "drupal": {
       "type": "composer",
       "url": "https://packages.drupal.org/8",
-      "exclude": ["drupal/section_purge", "dpc-sdp/redis"]
+      "exclude": ["drupal/section_purge"]
     },
     "dpc-sdp/bay_monitoring": {
       "no-api": true,
@@ -37,11 +37,6 @@
       "no-api": true,
       "type": "vcs",
       "url": "https://github.com/dpc-sdp/section_purge.git"
-    },
-    "dpc-sdp/redis": {
-      "no-api": true,
-      "type": "vcs",
-      "url": "https://github.com/dpc-sdp/redis.git"
     }
   },
   "minimum-stability": "dev",
