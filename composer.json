@@ -12,8 +12,7 @@
     "dpc-sdp/tide_logs": "^2.0",
     "dpc-sdp/bay_monitoring": "^2.0",
     "cweagans/composer-patches": "^1.7",
-    "ext-igbinary": "*",
-    "ext-redis": "^6.1"
+    "ext-igbinary": "*"
   },
   "config": {
     "allow-plugins": {
