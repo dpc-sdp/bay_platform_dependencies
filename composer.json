@@ -15,6 +15,7 @@
     "ext-gd": "*",
     "ext-igbinary": "*",
     "ext-redis": "*",
+    "ext-zip": "*",
     "ext-zlib": "*"
   },
   "config": {
