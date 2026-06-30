@@ -14,6 +14,7 @@
     "cweagans/composer-patches": "^1.7",
     "ext-gd": "*",
     "ext-igbinary": "*",
+    "ext-openssl": "*",
     "ext-redis": "*",
     "ext-zip": "*",
     "ext-zlib": "*"
