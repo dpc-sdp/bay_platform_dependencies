@@ -53,5 +53,5 @@ devcontainer exec --workspace-folder . tools/vendor/bin/phpcs \
 This module handles patching of the [Redis](https://www.drupal.org/project/redis) module with a few key features
 
 1. Adds support for RedisCluster client.
-1. Adds NewRelic transactions for RedisCluster operations (please see docs in
-   patches directory for how to reroll this patch)
+1. Uses the current [RedisCluster upstream patch](https://www.drupal.org/project/redis/issues/2900947).
+1. Preserves the configured TLS context during RedisCluster node discovery.
