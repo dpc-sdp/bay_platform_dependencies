@@ -24,4 +24,4 @@ jobs:
         run: composer --working-dir=tools install --no-interaction --prefer-dist --no-progress
 
       - name: Run PHPCS
-        run: tools/vendor/bin/phpcs --standard=phpcs.xml.dist
+        run: tools/vendor/bin/phpcs --standard=phpcs.xml.dist --extensions=php,module,inc,install,test,profile,theme --ignore=vendor,node_modules --report=full
