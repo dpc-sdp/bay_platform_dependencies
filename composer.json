@@ -30,7 +30,7 @@
     "patches": {
       "drupal/redis": {
         "Add RedisCluster client support": "https://www.drupal.org/files/issues/2026-05-12/2900947-98.patch",
-	"Forward the configured TLS context to RedisCluster": "https://gist.githubusercontent.com/GROwen/c29a081160f81c98414cf7c74f00fbbd/raw/e3cdbed53874c012dc86713fdeda95702daa45cd/redis-cluster-tls-context.patch"
+	    "Forward the configured TLS context to RedisCluster": "https://gist.githubusercontent.com/GROwen/c29a081160f81c98414cf7c74f00fbbd/raw/e3cdbed53874c012dc86713fdeda95702daa45cd/redis-cluster-tls-context.patch"
       },
       "drupal/section_purge": {
         "Update section_purge to support monitoring 1.18+ - https://www.drupal.org/project/section_purge/issues/3529971#comment-16145036": "https://www.drupal.org/files/issues/2025-06-13/section_purge-3529971_2.patch"
