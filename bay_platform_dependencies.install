@@ -294,3 +294,16 @@ function bay_platform_dependencies_update_10005(&$sandbox) {
 
   return implode("\n", $message);
 }
+
+/**
+ * Install marina_cf_cachetags module.
+ */
+function bay_platform_dependencies_update_10006() {
+  if (\Drupal::moduleHandler()->moduleExists('section_purger')) {
+    // If exists, uninstall module.
+    \Drupal::service('module_installer')->uninstall(['section_purger']);
+  }
+  if (!\Drupal::moduleHandler()->moduleExists('marina_cf_cachetags')) {
+    \Drupal::service('module_installer')->install(['marina_cf_cachetags']);
+  }
+}
