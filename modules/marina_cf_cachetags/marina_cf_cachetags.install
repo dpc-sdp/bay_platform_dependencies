@@ -1,0 +1,65 @@
+<?php
+
+/**
+ * @file
+ * Installs and uninstalls the Marina CloudFront cache tags integration.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function marina_cf_cachetags_install() {
+  $config = \Drupal::configFactory()->getEditable('purge.plugins');
+
+  // Register the bundled HTTP purger so Purge sends tags to the sidecar.
+  $purgers = $config->get('purgers') ?? [];
+  $purger_exists = FALSE;
+  foreach ($purgers as $purger) {
+    if ($purger['instance_id'] === 'marina_cf_cachetags') {
+      $purger_exists = TRUE;
+      break;
+    }
+  }
+  if (empty($purger_exists)) {
+    $purgers[] = [
+      'order_index' => 3,
+      'instance_id' => 'marina_cf_cachetags',
+      'plugin_id' => 'httpbundled',
+    ];
+    $config->set('purgers', $purgers);
+  }
+
+  // Process pending invalidations after the response has been sent.
+  $processors = $config->get('processors') ?? [];
+  $lateruntime_exists = FALSE;
+  foreach ($processors as &$processor) {
+    if ($processor['plugin_id'] === 'lateruntime') {
+      $processor['status'] = TRUE;
+      $lateruntime_exists = TRUE;
+      break;
+    }
+  }
+  unset($processor);
+  if (empty($lateruntime_exists)) {
+    $processors[] = [
+      'plugin_id' => 'lateruntime',
+      'status' => TRUE,
+    ];
+  }
+  $config->set('processors', $processors)->save();
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function marina_cf_cachetags_uninstall() {
+  $config = \Drupal::configFactory()->getEditable('purge.plugins');
+  $purgers = $config->get('purgers') ?? [];
+
+  // Avoid leaving Purge with a reference to this module's deleted settings.
+  $purgers = array_values(array_filter($purgers, static function (array $purger) {
+    return $purger['instance_id'] !== 'marina_cf_cachetags';
+  }));
+
+  $config->set('purgers', $purgers)->save();
+}

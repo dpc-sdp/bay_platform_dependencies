@@ -39,6 +39,29 @@ tools/vendor/bin/phpcs --standard=phpcs.xml.dist
   environment variable.
 - Adds validation to webform email handler form, restricting configuration
   emails configured in SMTP_WHITELIST envvar.
+- Provides the optional `marina_cf_cachetags` module. It sends cacheable
+  responses' Drupal cache tags in the `x-amz-meta-cache-tag` header and
+  invalidates those tags through the local CloudFront SigV4 sidecar.
+
+### CloudFront cache tags
+
+Enable the submodule with:
+
+```sh
+drush en marina_cf_cachetags
+```
+
+The module configures Purge's HTTP bundled purger to send a `POST` request to
+`http://localhost:8083/prod/cache-invalidation/{project}/{environment}` with a JSON
+body containing the comma-separated tags:
+
+```json
+{"tagsCsv":"tag:node:123"}
+```
+
+Purge processes invalidations at the end of the request with its late-runtime
+processor. Override the `httppurgersettings.settings.marina_cf_cachetags`
+configuration with the deployment's project and environment names.
 
 ## Patches
 
