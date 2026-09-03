@@ -6,6 +6,7 @@ core_version_requirement: ^10.2 || ^11
 dependencies:
   - bay_platform_dependencies:bay_platform_dependencies
   - purge:purge
-  - purge_processor_lateruntime:purge_processor_lateruntime
+  - purge:purge_processor_lateruntime
+  - purge:purge_queuer_coretags
+  - purge:purge_tokens
   - purge_purger_http:purge_purger_http
-  - purge_tokens:purge_tokens

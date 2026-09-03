@@ -296,14 +296,42 @@ function bay_platform_dependencies_update_10005(&$sandbox) {
 }
 
 /**
- * Install marina_cf_cachetags module.
+ * Replace the Section.io purger with the Marina CloudFront integration.
  */
 function bay_platform_dependencies_update_10006() {
-  if (\Drupal::moduleHandler()->moduleExists('section_purger')) {
-    // If exists, uninstall module.
-    \Drupal::service('module_installer')->uninstall(['section_purger']);
-  }
+  $module_installer = \Drupal::service('module_installer');
+
   if (!\Drupal::moduleHandler()->moduleExists('marina_cf_cachetags')) {
-    \Drupal::service('module_installer')->install(['marina_cf_cachetags']);
+    $module_installer->install(['marina_cf_cachetags']);
+  }
+
+  // Remove the legacy Section.io purger from Purge's plugin configuration.
+  $config_factory = \Drupal::configFactory();
+  $purge_plugins = $config_factory->getEditable('purge.plugins');
+  $purgers = $purge_plugins->get('purgers') ?? [];
+  $purgers = array_values(array_filter($purgers, static function (array $purger) {
+    return !in_array($purger['plugin_id'] ?? NULL, ['section', 'sectionbundled'], TRUE);
+  }));
+  $purge_plugins->set('purgers', $purgers)->save();
+
+  // Remove the logger channel associated with the legacy Section.io purger.
+  $logger_config = $config_factory->getEditable('purge.logger_channels');
+  $channels = $logger_config->get('channels') ?? [];
+  $channels = array_values(array_filter($channels, static function (array $channel) {
+    return !str_starts_with($channel['id'] ?? '', 'purger_section');
+  }));
+  $logger_config->set('channels', $channels)->save();
+
+  // Remove configuration and credentials that are no longer used.
+  $config_factory
+    ->getEditable('section_purge.settings.8714ff77fc')
+    ->delete();
+  $config_factory
+    ->getEditable('key.key.section_io_password')
+    ->delete();
+
+  // Keep the Composer package for this release so Drupal can uninstall it.
+  if (\Drupal::moduleHandler()->moduleExists('section_purge')) {
+    $module_installer->uninstall(['section_purge']);
   }
 }
