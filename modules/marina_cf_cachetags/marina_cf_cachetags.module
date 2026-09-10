@@ -1,0 +1,81 @@
+<?php
+
+/**
+ * @file
+ * Marina CloudFront cache tags integration.
+ */
+
+use Drupal\Core\Render\BubbleableMetadata;
+use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
+
+/**
+ * Separators offered by purge_tokens for the `invalidations` token group.
+ */
+const MARINA_CF_CACHETAGS_SEPARATORS = [
+  'separated_comma' => ',',
+  'separated_pipe' => '|',
+  'separated_tab' => "\t",
+];
+
+/**
+ * Implements hook_tokens_alter().
+ *
+ * purge_tokens builds `[invalidations:separated_comma]` from each
+ * invalidation's raw expression, so a tag invalidation contributes the bare
+ * Drupal cache tag, e.g. `node:203`.
+ *
+ * The cache invalidation API normalises what it receives before publishing it
+ * to EventBridge (marina, src/infra/constructs/cache-invalidation/publisher.ts):
+ *
+ *   - `tag:<x>`                       becomes `#<x>`  (a CloudFront cache tag)
+ *   - starts with `/`, `#`, or
+ *     contains `:`                    passes through unchanged
+ *   - anything else                   gets a leading `/` (a CloudFront path)
+ *
+ * A bare `node:203` contains a colon, so it passes through untouched and
+ * reaches CloudFront's CreateInvalidation as a literal path. Invalidation paths
+ * must begin with `/`, so those entries cannot match anything.
+ *
+ * Prefixing each expression with `tag:` routes them into the first branch, so
+ * they arrive as `#node:203` and are treated as cache tags — which is what the
+ * `x-amz-meta-cache-tag` response header this module sets exists to support.
+ */
+function marina_cf_cachetags_tokens_alter(array &$replacements, array $context, BubbleableMetadata $bubbleable_metadata) {
+  if (($context['type'] ?? NULL) !== 'invalidations') {
+    return;
+  }
+  $invalidations = $context['data']['invalidations'] ?? [];
+  if (!$invalidations) {
+    return;
+  }
+
+  foreach ($context['tokens'] as $name => $original) {
+    if (!isset(MARINA_CF_CACHETAGS_SEPARATORS[$name], $replacements[$original])) {
+      continue;
+    }
+
+    $expressions = [];
+    foreach ($invalidations as $invalidation) {
+      if (!$invalidation instanceof InvalidationInterface) {
+        continue;
+      }
+      // Only tag invalidations are ambiguous to the API; leave every other
+      // type to purge_tokens so URL and path purgers keep working.
+      if ($invalidation->getType() !== 'tag') {
+        continue;
+      }
+      $expression = $invalidation->getExpression();
+      if (!is_string($expression) || $expression === '') {
+        continue;
+      }
+      // Do not double-prefix if an expression already carries a marker.
+      $expressions[] = str_starts_with($expression, 'tag:') || str_starts_with($expression, '#')
+        ? $expression
+        : 'tag:' . $expression;
+    }
+
+    if ($expressions) {
+      $replacements[$original] = implode(MARINA_CF_CACHETAGS_SEPARATORS[$name], array_unique($expressions));
+    }
+  }
+}

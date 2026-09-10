@@ -29,6 +29,9 @@
     "composer-exit-on-patch-failure": true,
     "enable-patching": true,
     "patches": {
+      "drupal/purge": {
+        "Fix duplicate Drush command registration - https://www.drupal.org/project/purge/issues/3460094#comment-15821421": "https://www.drupal.org/files/issues/2024-10-18/3460094-remove_drush_services_yml.patch"
+      },
       "drupal/redis": {
         "Add RedisCluster client support": "https://www.drupal.org/files/issues/2026-05-12/2900947-98.patch",
 	    "Forward the configured TLS context to RedisCluster": "https://gist.githubusercontent.com/GROwen/c29a081160f81c98414cf7c74f00fbbd/raw/e3cdbed53874c012dc86713fdeda95702daa45cd/redis-cluster-tls-context.patch"
