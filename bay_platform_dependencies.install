@@ -335,3 +335,23 @@ function bay_platform_dependencies_update_10006() {
     $module_installer->uninstall(['section_purge']);
   }
 }
+
+/**
+ * Empty the purge queue after switching to the Marina CloudFront purger.
+ *
+ * Items queued for the Section.io purger (URL and wildcard invalidations) can
+ * never be handled by the tag-only Marina purger. Purge marks them
+ * NOT_SUPPORTED and returns them to the queue, so they recirculate on every
+ * run and, because the queue is ordered by creation time, always occupy the
+ * first slot of every claimed batch. purge_tokens_tokens() only builds token
+ * replacements when the batch offered to a purger starts at index 0, so one
+ * stale item is enough to send every real invalidation with the literal
+ * `[invalidations:separated_comma]` token as its request body.
+ */
+function bay_platform_dependencies_update_10007() {
+  if (!\Drupal::hasService('purge.queue')) {
+    return t('Purge queue service unavailable; nothing to empty.');
+  }
+  \Drupal::service('purge.queue')->emptyQueue();
+  return t('Emptied the purge queue to discard invalidations queued for the retired Section.io purger.');
+}
