@@ -51,17 +51,56 @@ Enable the submodule with:
 drush en marina_cf_cachetags
 ```
 
-The module configures Purge's HTTP bundled purger to send a `POST` request to
-`http://localhost:8083/prod/cache-invalidation/{project}/{environment}` with a JSON
-body containing the comma-separated tags:
+On install it registers Purge's HTTP bundled purger (instance
+`marina_cf_cachetags`), enables the `coretags` queuer and the `lateruntime`
+processor, and empties the purge queue so nothing queued for a previous purger
+lingers (`bay_platform_dependencies_update_10007()`).
+
+**Response header.** Cacheable responses carry `x-amz-meta-cache-tag`, a
+comma-separated list of the response's Drupal cache tags hashed with xxHash3
+and truncated to 6 hex characters (`node:203` → `#` + first 6 chars of
+`hash('xxh3', 'node:203')`). Tags matching the `purge_queuer_coretags`
+blacklist are dropped, entity tags are listed first, and the list is capped at
+the 50 tags CloudFront stores per object. Hashing keeps the header far below
+CloudFront's 1,783-character limit.
+
+**Invalidation.** The purger sends a `POST` to
+`http://localhost:8083/prod/cache-invalidation/{project}/{environment}` (the
+platform's SigV4 sidecar) with a JSON body of the same hashes, each prefixed
+with `tag:`:
 
 ```json
-{"tagsCsv":"tag:node:123"}
+{"tagsCsv":"tag:b9917e,tag:4c1d2a"}
 ```
 
-Purge processes invalidations at the end of the request with its late-runtime
-processor. Override the `httppurgersettings.settings.marina_cf_cachetags`
-configuration with the deployment's project and environment names.
+The cache invalidation API rewrites `tag:<hash>` to `#<hash>`, which is
+CloudFront's tag-invalidation syntax. Both sides must use the same hash, so
+they share the `marina_cf_cachetags.cache_tags_hash` service. Override
+`marina_cf_cachetags.cache_tag_filter` or
+`marina_cf_cachetags.cache_tag_prioritizer` in a site's `services.yml` to
+change which tags are kept and in what order.
+
+**Site configuration.** Override the purger's `path` with the deployment's
+project and environment names (the placeholders are not substituted
+anywhere else), e.g. in `settings.php`:
+
+```php
+$config['purge_purger_http.settings.marina_cf_cachetags']['path'] =
+  sprintf('/prod/cache-invalidation/%s/%s', 'my-project', getenv('MARINA_ENVIRONMENT'));
+```
+
+**Platform requirements.** The CloudFront distribution must declare
+`CacheTagConfig` with `HeaderName: x-amz-meta-cache-tag`; distributions
+without it ignore the header and every tag invalidation is a no-op. Objects
+cached before `CacheTagConfig` is enabled carry no tags — issue one `/*`
+invalidation after enabling it.
+
+To invalidate a tag by hand, hash it first:
+
+```sh
+aws cloudfront create-invalidation --distribution-id <id> \
+  --paths "#$(php -r 'echo substr(hash("xxh3", "node:203"), 0, 6);')"
+```
 
 ## Patches
 
