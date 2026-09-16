@@ -47,7 +47,7 @@ class TokensAlterTest extends UnitTestCase {
   /**
    * Tag expressions are hashed and prefixed; other types are left alone.
    */
-  public function testTagsAreHashedAndPrefixed(): void {
+  public function testTagsAreHashed(): void {
     $context = [
       'type' => 'invalidations',
       'tokens' => ['separated_comma' => '[invalidations:separated_comma]'],
@@ -58,8 +58,7 @@ class TokensAlterTest extends UnitTestCase {
           3 => $this->invalidation('tag', 'node:203'),
           4 => $this->invalidation('url', 'http://example.com/'),
           5 => $this->invalidation('tag', 'node:203'),
-          6 => $this->invalidation('tag', '#already'),
-          7 => $this->invalidation('tag', 'config:system.site'),
+          6 => $this->invalidation('tag', 'config:system.site'),
         ],
       ],
     ];
@@ -67,7 +66,7 @@ class TokensAlterTest extends UnitTestCase {
     $replacements = [];
     marina_cf_cachetags_tokens_alter($replacements, $context, new BubbleableMetadata());
     $this->assertSame(
-      'tag:' . $this->hash->hashTag('node:203') . ',#already,tag:' . $this->hash->hashTag('config:system.site'),
+      $this->hash->hashTag('node:203') . ',' . $this->hash->hashTag('config:system.site'),
       $replacements['[invalidations:separated_comma]']
     );
   }

@@ -46,9 +46,10 @@ final class InvalidationTokens {
       if (!\is_string($expression) || $expression === '') {
         continue;
       }
-      $expressions[] = \str_starts_with($expression, 'tag:') || \str_starts_with($expression, '#')
-        ? $expression
-        : 'tag:' . $hash->hashTag($expression);
+      // The cache invalidation API hashes/normalises the raw tag itself, so
+      // send the bare xxHash3 hash — the same value emitted in the
+      // x-amz-meta-cache-tag response header.
+      $expressions[] = $hash->hashTag($expression);
     }
     return \array_values(\array_unique($expressions));
   }
