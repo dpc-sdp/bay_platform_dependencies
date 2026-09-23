@@ -38,7 +38,7 @@ tools/vendor/bin/phpcs --standard=phpcs.xml.dist
 - Allows configuring the default `Reply-To` email address via `SMTP_REPLYTO`
   environment variable.
 - Adds validation to webform email handler form, restricting configuration
-  emails configured in SMTP_WHITELIST envvar.
+  emails configured in SMTP_FROM_WHITELIST envvar.
 - Provides the optional `marina_cf_cachetags` module. It sends cacheable
   responses' Drupal cache tags in the `x-amz-meta-cache-tag` header and
   invalidates those tags through the local CloudFront SigV4 sidecar.
