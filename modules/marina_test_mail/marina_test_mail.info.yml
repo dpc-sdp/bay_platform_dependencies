@@ -1,0 +1,7 @@
+name: 'Marina Test Mail'
+type: module
+description: 'Provides a Drush command to send SMTP-backed test emails through Drupal mail.'
+package: 'SDP Bay'
+core_version_requirement: ^10.2 || ^11
+dependencies:
+  - smtp:smtp

@@ -1,0 +1,27 @@
+<?php
+
+/**
+ * @file
+ * Mail callbacks for the Marina test mail module.
+ */
+
+/**
+ * Implements hook_mail().
+ */
+function marina_test_mail_mail(string $key, array &$message, array $params): void {
+  if ($key !== 'smtp_test') {
+    return;
+  }
+
+  $site_name = \Drupal::config('system.site')->get('name') ?: 'Drupal';
+
+  $message['subject'] = t('SMTP test email from @site', ['@site' => $site_name]);
+  $message['body'][] = t('This is a test email sent through the Drupal mail system.');
+  $message['body'][] = t('Timestamp: @timestamp', ['@timestamp' => $params['timestamp'] ?? 'unknown']);
+  $message['body'][] = t('Hostname: @hostname', ['@hostname' => $params['hostname'] ?? 'unknown']);
+
+  if (!empty($params['reply_to'])) {
+    $message['reply-to'] = $params['reply_to'];
+    $message['headers']['Reply-to'] = $params['reply_to'];
+  }
+}

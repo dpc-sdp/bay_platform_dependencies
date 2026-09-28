@@ -42,6 +42,8 @@ tools/vendor/bin/phpcs --standard=phpcs.xml.dist
 - Provides the optional `marina_cf_cachetags` module. It sends cacheable
   responses' Drupal cache tags in the `x-amz-meta-cache-tag` header and
   invalidates those tags through the local CloudFront SigV4 sidecar.
+- Provides the optional `marina_test_mail` module with a Drush command for
+  SMTP-backed test emails.
 
 ### CloudFront cache tags
 
@@ -100,6 +102,28 @@ To invalidate a tag by hand, hash it first:
 ```sh
 aws cloudfront create-invalidation --distribution-id <id> \
   --paths "#$(php -r 'echo substr(hash("xxh3", "node:203"), 0, 6);')"
+```
+
+### SMTP test email command
+
+Enable the submodule with:
+
+```sh
+drush en marina_test_mail
+```
+
+Send a test email through Drupal's configured mail backend (including SMTP):
+
+```sh
+drush marina-test-mail:send user@example.com
+```
+
+Optional sender and reply-to overrides:
+
+```sh
+drush marina-test-mail:send user@example.com \
+  --from=no-reply@example.com \
+  --reply-to=support@example.com
 ```
 
 ## Patches

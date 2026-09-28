@@ -1,0 +1,6 @@
+services:
+  marina_test_mail.commands:
+    class: Drupal\marina_test_mail\Commands\MarinaTestMailCommands
+    arguments: ['@plugin.manager.mail', '@language_manager']
+    tags:
+      - { name: drush.command }
