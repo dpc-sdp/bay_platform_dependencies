@@ -4,10 +4,11 @@
   "type": "drupal-module",
   "license": "GPL-2.0-or-later",
   "require": {
+    "php": "^8.3",
     "drush/drush": "^13",
     "drupal/purge": "^3.4",
     "drupal/section_purge": "4.x",
-    "drupal/redis": "1.6.0",
+    "drupal/redis": "1.11.0",
     "drupal/smtp": "^1.2",
     "dpc-sdp/tide_logs": "^2.0",
     "dpc-sdp/bay_monitoring": "^2.0",
@@ -22,8 +23,13 @@
     "composer-exit-on-patch-failure": true,
     "enable-patching": true,
     "patches": {
+      "drupal/purge": {
+        "Fix duplicate Drush command registration - https://www.drupal.org/project/purge/issues/3460094#comment-15821421": "https://www.drupal.org/files/issues/2024-10-18/3460094-remove_drush_services_yml.patch",
+        "Handle missing $data['invalidations'][0] in invalidation check (token replacement skipped when the offered set is not indexed from 0) - https://www.drupal.org/project/purge/issues/3484260": "https://www.drupal.org/files/issues/2024-10-29/3484260.patch"
+      },
       "drupal/redis": {
-        "Implement initial RedisCluster client integration - https://gist.github.com/nicksantamaria/0e0c91aa0a33359f055165b49df59f04 with new relic integration": "https://gist.githubusercontent.com/nicksantamaria/0e0c91aa0a33359f055165b49df59f04/raw/c498a55f3a7a086b38e54e493bf69015a2fa33ed/drupal-redis-1.6-redis-cluster-newrelic.patch"
+        "Add RedisCluster client support": "https://www.drupal.org/files/issues/2026-05-12/2900947-98.patch",
+	      "Forward the configured TLS context to RedisCluster": "https://gist.githubusercontent.com/GROwen/c29a081160f81c98414cf7c74f00fbbd/raw/e3cdbed53874c012dc86713fdeda95702daa45cd/redis-cluster-tls-context.patch"
       },
       "drupal/section_purge": {
         "Update section_purge to support monitoring 1.18+ - https://www.drupal.org/project/section_purge/issues/3529971#comment-16145036": "https://www.drupal.org/files/issues/2025-06-13/section_purge-3529971_2.patch"
