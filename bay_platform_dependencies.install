@@ -294,3 +294,64 @@ function bay_platform_dependencies_update_10005(&$sandbox) {
 
   return implode("\n", $message);
 }
+
+/**
+ * Replace the Section.io purger with the Marina CloudFront integration.
+ */
+function bay_platform_dependencies_update_10006() {
+  $module_installer = \Drupal::service('module_installer');
+
+  if (!\Drupal::moduleHandler()->moduleExists('marina_cf_cachetags')) {
+    $module_installer->install(['marina_cf_cachetags']);
+  }
+
+  // Remove the legacy Section.io purger from Purge's plugin configuration.
+  $config_factory = \Drupal::configFactory();
+  $purge_plugins = $config_factory->getEditable('purge.plugins');
+  $purgers = $purge_plugins->get('purgers') ?? [];
+  $purgers = array_values(array_filter($purgers, static function (array $purger) {
+    return !in_array($purger['plugin_id'] ?? NULL, ['section', 'sectionbundled'], TRUE);
+  }));
+  $purge_plugins->set('purgers', $purgers)->save();
+
+  // Remove the logger channel associated with the legacy Section.io purger.
+  $logger_config = $config_factory->getEditable('purge.logger_channels');
+  $channels = $logger_config->get('channels') ?? [];
+  $channels = array_values(array_filter($channels, static function (array $channel) {
+    return !str_starts_with($channel['id'] ?? '', 'purger_section');
+  }));
+  $logger_config->set('channels', $channels)->save();
+
+  // Remove configuration and credentials that are no longer used.
+  $config_factory
+    ->getEditable('section_purge.settings.8714ff77fc')
+    ->delete();
+  $config_factory
+    ->getEditable('key.key.section_io_password')
+    ->delete();
+
+  // Keep the Composer package for this release so Drupal can uninstall it.
+  if (\Drupal::moduleHandler()->moduleExists('section_purge')) {
+    $module_installer->uninstall(['section_purge']);
+  }
+}
+
+/**
+ * Empty the purge queue after switching to the Marina CloudFront purger.
+ *
+ * Items queued for the Section.io purger (URL and wildcard invalidations) can
+ * never be handled by the tag-only Marina purger. Purge marks them
+ * NOT_SUPPORTED and returns them to the queue, so they recirculate on every
+ * run and, because the queue is ordered by creation time, always occupy the
+ * first slot of every claimed batch. purge_tokens_tokens() only builds token
+ * replacements when the batch offered to a purger starts at index 0, so one
+ * stale item is enough to send every real invalidation with the literal
+ * `[invalidations:separated_comma]` token as its request body.
+ */
+function bay_platform_dependencies_update_10007() {
+  if (!\Drupal::hasService('purge.queue')) {
+    return t('Purge queue service unavailable; nothing to empty.');
+  }
+  \Drupal::service('purge.queue')->emptyQueue();
+  return t('Emptied the purge queue to discard invalidations queued for the retired Section.io purger.');
+}
