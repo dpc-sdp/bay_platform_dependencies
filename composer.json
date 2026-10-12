@@ -6,17 +6,19 @@
   "require": {
     "php": "^8.3",
     "drush/drush": "^13",
-    "drupal/purge": "^3.4",
-    "drupal/section_purge": "4.x",
-    "drupal/redis": "1.11.0",
+    "drupal/purge": "^3.6",
+    "drupal/section_purge": "^5.0",
+    "drupal/redis": "^1.11",
     "drupal/smtp": "^1.2",
-    "dpc-sdp/tide_logs": "^2.0",
-    "dpc-sdp/bay_monitoring": "^2.0",
+    "dpc-sdp/tide_logs": "^3.0.0",
+    "dpc-sdp/bay_monitoring": "^3.0.0",
     "cweagans/composer-patches": "^1.7"
   },
   "config": {
     "allow-plugins": {
-      "cweagans/composer-patches": true
+      "cweagans/composer-patches": true,
+      "drupal/core-composer-scaffold": false,
+      "symfony/runtime": true
     }
   },
   "extra": {
@@ -29,22 +31,27 @@
       },
       "drupal/redis": {
         "Add RedisCluster client support": "https://www.drupal.org/files/issues/2026-05-12/2900947-98.patch",
-	      "Forward the configured TLS context to RedisCluster": "https://gist.githubusercontent.com/GROwen/c29a081160f81c98414cf7c74f00fbbd/raw/e3cdbed53874c012dc86713fdeda95702daa45cd/redis-cluster-tls-context.patch"
-      },
-      "drupal/section_purge": {
-        "Update section_purge to support monitoring 1.18+ - https://www.drupal.org/project/section_purge/issues/3529971#comment-16145036": "https://www.drupal.org/files/issues/2025-06-13/section_purge-3529971_2.patch"
+        "Forward the configured TLS context to RedisCluster": "https://gist.githubusercontent.com/GROwen/c29a081160f81c98414cf7c74f00fbbd/raw/e3cdbed53874c012dc86713fdeda95702daa45cd/redis-cluster-tls-context.patch"
       }
     }
   },
   "repositories": {
     "drupal": {
       "type": "composer",
-      "url": "https://packages.drupal.org/8"
+      "url": "https://packages.drupal.org/8",
+      "exclude": [
+        "drupal/section_purge"
+      ]
     },
     "dpc-sdp/bay_monitoring": {
       "no-api": true,
       "type": "vcs",
       "url": "https://github.com/dpc-sdp/bay_monitoring.git"
+    },
+    "dpc-sdp/section_purge": {
+      "no-api": true,
+      "type": "vcs",
+      "url": "https://github.com/dpc-sdp/section_purge.git"
     }
   },
   "minimum-stability": "dev",
