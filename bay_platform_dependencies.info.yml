@@ -7,6 +7,5 @@ dependencies:
   - bay_monitoring:bay_monitoring
   - purge:purge
   - redis:redis
-  - section_purge:section_purge
   - smtp:smtp
   - tide_logs:tide_logs
