@@ -12,7 +12,7 @@
     "drupal/smtp": "^1.2",
     "dpc-sdp/tide_logs": "^3.0.0",
     "dpc-sdp/bay_monitoring": "^3.0.0",
-    "cweagans/composer-patches": "^1.7"
+    "cweagans/composer-patches": "^2.0"
   },
   "config": {
     "allow-plugins": {
