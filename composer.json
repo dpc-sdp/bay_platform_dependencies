@@ -31,7 +31,8 @@
       },
       "drupal/redis": {
         "Add RedisCluster client support": "https://www.drupal.org/files/issues/2026-05-12/2900947-98.patch",
-        "Forward the configured TLS context to RedisCluster": "https://gist.githubusercontent.com/GROwen/c29a081160f81c98414cf7c74f00fbbd/raw/e3cdbed53874c012dc86713fdeda95702daa45cd/redis-cluster-tls-context.patch"
+        "Forward the configured TLS context to RedisCluster": "https://gist.githubusercontent.com/GROwen/c29a081160f81c98414cf7c74f00fbbd/raw/e3cdbed53874c012dc86713fdeda95702daa45cd/redis-cluster-tls-context.patch",
+        "Preserve the legacy Bay Redis Cluster checksum class name": "https://gist.githubusercontent.com/vincent-gao/3a6e39b6773b1b04936256d4175c4c82/raw/67495979277b3cef07b50335a10d904a7910f994/legacy-cluster-checksum-class.patch"
       }
     }
   },
